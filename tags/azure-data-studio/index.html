@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="kindfamily-b">
-    <title>아카이브: 2021/1 - kindfamily-b</title>
+    <title>태그: azure-data-studio - kindfamily-b</title>
     <meta name="author" content="John Doe">
     
     
@@ -14,7 +14,7 @@
     <script type="application/ld+json">{}</script>
     <meta property="og:type" content="blog">
 <meta property="og:title" content="kindfamily-b">
-<meta property="og:url" content="http://example.com/archives/2021/01/index.html">
+<meta property="og:url" content="http://example.com/tags/azure-data-studio/index.html">
 <meta property="og:site_name" content="kindfamily-b">
 <meta property="og:locale" content="ko_KR">
 <meta property="article:author" content="John Doe">
@@ -285,81 +285,6 @@
                     
                         <a
                             class="link-unstyled"
-                            href="/2021/01/30/20210130-2/"
-                            aria-label=": 데이터분석가로 성장하기 2부-스텍오버플로우 2013년 데이터 분석"
-                        >
-                            데이터분석가로 성장하기 2부-스텍오버플로우 2013년 데이터 분석
-                        </a>
-                    
-                </h1>
-                <div class="postShorten-meta">
-    <time datetime="2021-01-30T06:16:53+00:00">
-	
-		    2021/01/30
-    	
-    </time>
-    
-</div>
-
-            </div>
-            
-                <div class="postShorten-content">
-                    <h1 id="초보개발자-데이터-분석전문가로-성장하기-시즌1"><a href="#초보개발자-데이터-분석전문가로-성장하기-시즌1" class="headerlink" title="초보개발자 데이터 분석전문가로 성장하기 시즌1"></a>초보개발자 데이터 분석전문가로 성장하기 시즌1</h1><p>2화 대용량 오픈데이터 분석 - 2013년 데이터 분석</p>
-<hr>
-<h3 id="분석할-오픈데이터"><a href="#분석할-오픈데이터" class="headerlink" title="분석할 오픈데이터"></a>분석할 오픈데이터</h3><ul>
-<li>데이터 : 스텍오버플로우 2013년 데이터  </li>
-<li>사이즈 : 54.79GB  </li>
-<li>파일리스트<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">StackOverflow2013_log.ldf</span><br><span class="line">StackOverflow2013_4.ndf</span><br><span class="line">StackOverflow2013_3.ndf</span><br><span class="line">StackOverflow2013_2.ndf</span><br><span class="line">StackOverflow2013_1.mdf</span><br></pre></td></tr></table></figure>
-<h3 id="참고"><a href="#참고" class="headerlink" title="참고"></a>참고</h3>세팅과 2010년 데이터 sql server에 업로드 하는 방법<br><a target="_blank" rel="noopener" href="https://kindfamilyb.github.io/2021/01/30/%EB%B6%84%EC%84%9D/">https://kindfamilyb.github.io/2021/01/30/%EB%B6%84%EC%84%9D/</a></li>
-</ul>
-<h3 id="참고사이트"><a href="#참고사이트" class="headerlink" title="참고사이트"></a>참고사이트</h3><ol>
-<li><p> stacexchange<br><a target="_blank" rel="noopener" href="https://data.stackexchange.com/stackoverflow/queries">https://data.stackexchange.com/stackoverflow/queries</a></p>
-</li>
-<li><p>brentozar<br><a target="_blank" rel="noopener" href="https://www.brentozar.com/archive/2015/10/how-to-download-the-stack-overflow-database-via-bittorrent/">https://www.brentozar.com/archive/2015/10/how-to-download-the-stack-overflow-database-via-bittorrent/</a></p>
-</li>
-</ol>
-<h3 id="세팅순서-7step"><a href="#세팅순서-7step" class="headerlink" title="세팅순서 ( 7step )"></a>세팅순서 ( 7step )</h3><h3 id="1-sql-server-도커생성"><a href="#1-sql-server-도커생성" class="headerlink" title="1. sql server 도커생성"></a>1. sql server 도커생성</h3><p><code>docker run -d --name sql_server_stackoverflow2013 -e &#39;ACCEPT_EULA=Y&#39; -e &#39;SB_PASSWORD=reallyStrongPwd123&#39; -p 1433:1433 mcr.microsoft.com/mssql/server:2019-latest</code><br>-d : Run container in background and print container ID<br>–name : Assign a name to the container<br>-e : Set environment variables<br>-p : Publish a container’s port(s) to the host</p>
-<h3 id="2-mssql-접속"><a href="#2-mssql-접속" class="headerlink" title="2. mssql 접속"></a>2. mssql 접속</h3><p><code>npm install -g sql-cli</code><br><code>mssql -u sa -p reallyStrongPwd123</code></p>
-<h3 id="3-docker-root-사용자로-접속-backup-폴더-생성"><a href="#3-docker-root-사용자로-접속-backup-폴더-생성" class="headerlink" title="3. docker root 사용자로 접속 backup 폴더 생성"></a>3. docker root 사용자로 접속 backup 폴더 생성</h3><p><code>docker exec -itu 0 87c1f0ca52a6 &quot;bash&quot;</code><br><code>cd /var/opt/mssql</code><br><code>mkdir backup</code>  </p>
-<h3 id="4-backup-폴더에-파일-cp"><a href="#4-backup-폴더에-파일-cp" class="headerlink" title="4. backup 폴더에 파일 cp"></a>4. backup 폴더에 파일 cp</h3><p><code>docker ps</code><br><code>docker cp &lt;디렉토리&gt; &lt;dockerid&gt;:/var/opt/mssql/backup</code>  </p>
-<h3 id="5-백업-폴더로-이동"><a href="#5-백업-폴더로-이동" class="headerlink" title="5. 백업 폴더로 이동"></a>5. 백업 폴더로 이동</h3><p><code>docker exec -itu 0 87c1f0ca52a6 &quot;bash&quot;</code><br><code>cd /var/opt/mssql/backup</code></p>
-<h3 id="6-파일의-권한설정"><a href="#6-파일의-권한설정" class="headerlink" title="6. 파일의 권한설정"></a>6. 파일의 권한설정</h3><p><code>chmod 777 StackOverflow2010.mdf</code>  </p>
-<h3 id="7-cli-접속-db생성"><a href="#7-cli-접속-db생성" class="headerlink" title="7. cli 접속 db생성"></a>7. cli 접속 db생성</h3><p><code>mssql -u sa -p reallyStrongPwd123</code><br><code>CREATE DATABASE stackoverflow2013 ON (FILENAME = &#39;/var/opt/mssql/backup/StackOverflow2013/StackOverflow2013_1.mdf&#39;), (FILENAME = &#39;/var/opt/mssql/backup/StackOverflow2013/StackOverflow2013_2.ndf&#39;), (FILENAME = &#39;/var/opt/mssql/backup/StackOverflow2013/StackOverflow2013_3.ndf&#39;), (FILENAME = &#39;/var/opt/mssql/backup/StackOverflow2013/StackOverflow2013_4.ndf&#39;), (FILENAME = &#39;/var/opt/mssql/backup/StackOverflow2013/StackOverflow2013_log.ldf&#39;) FOR ATTACH;</code></p>
-<h3 id="스텍오버플로우-쿼리분석"><a href="#스텍오버플로우-쿼리분석" class="headerlink" title="스텍오버플로우 쿼리분석"></a>스텍오버플로우 쿼리분석</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">-- StackOverflow Rank and Percentile</span><br><span class="line"></span><br><span class="line">WITH Rankings AS (</span><br><span class="line">SELECT Id, Ranking &#x3D; ROW_NUMBER() OVER(ORDER BY Reputation DESC)</span><br><span class="line">FROM Users</span><br><span class="line">)</span><br><span class="line">,Counts AS (</span><br><span class="line">SELECT Count &#x3D; COUNT(*)</span><br><span class="line">FROM Users</span><br><span class="line">WHERE Reputation &gt; 100</span><br><span class="line">)</span><br><span class="line">SELECT Id, Ranking, CAST(Ranking AS decimal(20, 5)) &#x2F; (SELECT Count FROM Counts) AS Percentile</span><br><span class="line">FROM Rankings</span><br><span class="line">WHERE Id &#x3D; ##UserId##</span><br></pre></td></tr></table></figure>
-<h4 id="방법1"><a href="#방법1" class="headerlink" title="방법1"></a>방법1</h4><p>stacExchange사이트에서 바로 쿼리실행<br><a target="_blank" rel="noopener" href="https://data.stackexchange.com/stackoverflow/query/6772/stackoverflow-rank-and-percentile">https://data.stackexchange.com/stackoverflow/query/6772/stackoverflow-rank-and-percentile</a></p>
-<h4 id="방법2"><a href="#방법2" class="headerlink" title="방법2"></a>방법2</h4><p>로컬 sql server에서 쿼리 실행  </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ITH Rankings AS (</span><br><span class="line">SELECT Id, Ranking &#x3D; ROW_NUMBER() OVER(ORDER BY Reputation DESC)</span><br><span class="line">FROM Users</span><br><span class="line">)</span><br><span class="line">,Counts AS (</span><br><span class="line">SELECT Count &#x3D; COUNT(*)</span><br><span class="line">FROM Users</span><br><span class="line">WHERE Reputation &gt; 100</span><br><span class="line">)</span><br><span class="line">SELECT Id, Ranking, CAST(Ranking AS decimal(20, 5)) &#x2F; (SELECT Count FROM Counts) AS Percentile</span><br><span class="line">FROM Rankings</span><br><span class="line">--- WHERE ID &#x3D; ##디비에 있는 userid 넣어야함##</span><br></pre></td></tr></table></figure>
-                    
-                        
-
-
-                    
-                    
-                        <p>
-                            <a
-                                href="/2021/01/30/20210130-2/#post-footer"
-                                class="postShorten-excerpt_link link"
-                                aria-label=""
-                            >
-                                댓글 공유
-                            </a>
-                        </p>
-                    
-                </div>
-            
-        </div>
-        
-    </article>
-    
-    
-    <article class="postShorten postShorten--thumbnailimg-bottom">
-        <div class="postShorten-wrap">
-            
-            <div class="postShorten-header">
-                <h1 class="postShorten-title">
-                    
-                        <a
-                            class="link-unstyled"
                             href="/2021/01/30/20210130_1/"
                             aria-label=": 데이터분석가로 성장하기 1부-스텍오버플로우 데이터 분석"
                         >
@@ -449,7 +374,6 @@
 </div>
 
 </section>
-
 
 
                 <footer id="footer" class="main-content-wrap">

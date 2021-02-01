@@ -6,18 +6,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="kindfamily-b">
-    <title>아카이브: 2021/1 - kindfamily-b</title>
+    <title>데이터분석가로 성장하기 1부-스텍오버플로우 데이터 분석 - kindfamily-b</title>
     <meta name="author" content="John Doe">
     
     
     
-    <script type="application/ld+json">{}</script>
-    <meta property="og:type" content="blog">
-<meta property="og:title" content="kindfamily-b">
-<meta property="og:url" content="http://example.com/archives/2021/01/index.html">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"John Doe","sameAs":["https://github.com/kindfamilyb","https://stackoverflow.com/users/15048831/","https://www.facebook.com/kind.familes","https://www.linkedin.com/profile/","kindfamily@kakao.com"]},"articleBody":"초보개발자 데이터 분석전문가로 성장하기 시즌11화 대용량 오픈데이터 분석 - docker에 sql server 설치 및 2010년 데이터 샘플데이터 분석\n분석할 오픈데이터\n스택오버\nlalavel db구조\n전세계 바이러스 데이터\n첫번째시리즈 스택오버 플로우\n\nMSSQL에서 관리되는 파일은 다음과 같이 3가지 타입이다.데이터파일과 로그파일은 데이터베이스의 의해 개별적으로 관리된다.mdf : SQL Server 및 관련 추가 기능과 함께 설치된 데이터베이스 파일에 사용됩니다ldf : 파일은 데이터베이스의 데이터파일과 로그파일을 의미한다.  \n\nPrimary Data File주 데이터 파일은 데이터베이스의 시작 지점이며 데이터베이스의 나머지 파일을 가리킵니다. 모든 데이터베이스에는 하나의 주 데이터 파일이 있습니다. 권장되는 주 데이터 파일 확장명은 .mdf입니다.\nSecondary Data File보조 데이터 파일은 주 데이터 파일이 아닌 모든 데이터 파일을 구성합니다. 데이터베이스에 따라 보조 데이터 파일이 없을 수도 있고 여러 개 있을 수도 있습니다. 권장되는 보조 데이터 파일 확장명은 .ndf입니다.\nLog File로그 파일에는 데이터베이스를 복구하는 데 사용되는 모든 로그 정보가 들어 있습니다. 데이터베이스에 로그 파일이 두 개 이상 있을 수 있으며 데이터베이스마다 적어도 하나의 로그 파일이 있어야 합니다. 권장되는 로그 파일 확장명은 .ldf입니다.\n\n설치 (mac)\ndocker &gt; ui 확인\nazure data studio &gt; ui 확인\niterm\nnodejs\n\n참고내용\n 스텍오버플로우 연간데이터https://www.brentozar.com/archive/2015/10/how-to-download-the-stack-overflow-database-via-bittorrent/\n\nLinux Docker 컨테이너에서 SQL Server 데이터베이스 복원https://docs.microsoft.com/ko-kr/sql/linux/tutorial-restore-backup-in-sql-server-container?view=sql-server-ver15&amp;fbclid=IwAR1geL28AkrvWm9qknMfMaTkvb1SAIxTejiqtPaI9Vkoq-XX49Ch5opc2AM#copy-a-backup-file-into-the-container\n\nHow to Install SQL Server on a Machttps://database.guide/how-to-install-sql-server-on-a-mac/\n\n\n세팅순서 ( 7step )1. sql server 도커생성docker run -d --name sql_server_demo -e &#39;ACCEPT_EULA=Y&#39; -e &#39;SA_PASSWORD=reallyStrongPwd123&#39; -p 1433:1433 mcr.microsoft.com/mssql/server:2019-latest\n-d : Run container in background and print container ID–name : Assign a name to the container-e : Set environment variables-p : Publish a container’s port(s) to the host\n2. mssql 접속npm install -g sql-climssql -u sa -p reallyStrongPwd123\n3. docker root 사용자로 접속 backup 폴더 생성docker exec -itu 0 87c1f0ca52a6 &quot;bash&quot;cd /var/opt/mssqlmkdir backup  \n4. backup 폴더에 파일 cpdocker psdocker cp &lt;디렉토리&gt; &lt;dockerid&gt;:/var/opt/mssql/backup  \n5. 백업 폴더로 이동docker exec -itu 0 87c1f0ca52a6 &quot;bash&quot;cd /var/opt/mssql/backup\n6. 파일의 권한설정chmod 777 StackOverflow2010.mdf  \n7. cli 접속 db생성mssql -u sa -p reallyStrongPwd123CREATE DATABASE STACOVER ON (FILENAME = &#39;/var/opt/mssql/backup/StackOverflow2010.mdf&#39;), (FILENAME = &#39;/var/opt/mssql/backup/StackOverflow2010_log.ldf&#39;) FOR ATTACH;  \n스텍오버플로우 쿼리분석 맛보기1234567891011121314-- StackOverflow Rank and PercentileWITH Rankings AS (SELECT Id, Ranking &#x3D; ROW_NUMBER() OVER(ORDER BY Reputation DESC)FROM Users),Counts AS (SELECT Count &#x3D; COUNT(*)FROM UsersWHERE Reputation &gt; 100)SELECT Id, Ranking, CAST(Ranking AS decimal(20, 5)) &#x2F; (SELECT Count FROM Counts) AS PercentileFROM RankingsWHERE Id &#x3D; ##UserId##\n방법1stacExchange사이트에서 바로 쿼리실행https://data.stackexchange.com/stackoverflow/query/6772/stackoverflow-rank-and-percentile\n방법2로컬 sql server에서 쿼리 실행  \n123456789101112ITH Rankings AS (SELECT Id, Ranking &#x3D; ROW_NUMBER() OVER(ORDER BY Reputation DESC)FROM Users),Counts AS (SELECT Count &#x3D; COUNT(*)FROM UsersWHERE Reputation &gt; 100)SELECT Id, Ranking, CAST(Ranking AS decimal(20, 5)) &#x2F; (SELECT Count FROM Counts) AS PercentileFROM Rankings--- WHERE ID &#x3D; ##디비에 있는 userid 넣어야함##","dateCreated":"2021-01-30T03:03:37+00:00","dateModified":"2021-01-30T06:19:51+00:00","datePublished":"2021-01-30T03:03:37+00:00","description":"","headline":"데이터분석가로 성장하기 1부-스텍오버플로우 데이터 분석","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2021/01/30/20210130_1/"},"publisher":{"@type":"Organization","name":"John Doe","sameAs":["https://github.com/kindfamilyb","https://stackoverflow.com/users/15048831/","https://www.facebook.com/kind.familes","https://www.linkedin.com/profile/","kindfamily@kakao.com"]},"url":"http://example.com/2021/01/30/20210130_1/","keywords":"stacoverflow-2010, azure-data-studio"}</script>
+    <meta name="description" content="초보개발자 데이터 분석전문가로 성장하기 시즌11화 대용량 오픈데이터 분석 - docker에 sql server 설치 및 2010년 데이터 샘플데이터 분석 분석할 오픈데이터 스택오버 lalavel db구조 전세계 바이러스 데이터 첫번째시리즈 스택오버 플로우  MSSQL에서 관리되는 파일은 다음과 같이 3가지 타입이다.데이터파일과 로그파일은 데이터베이스의 의해">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="데이터분석가로 성장하기 1부-스텍오버플로우 데이터 분석">
+<meta property="og:url" content="http://example.com/2021/01/30/20210130_1/index.html">
 <meta property="og:site_name" content="kindfamily-b">
+<meta property="og:description" content="초보개발자 데이터 분석전문가로 성장하기 시즌11화 대용량 오픈데이터 분석 - docker에 sql server 설치 및 2010년 데이터 샘플데이터 분석 분석할 오픈데이터 스택오버 lalavel db구조 전세계 바이러스 데이터 첫번째시리즈 스택오버 플로우  MSSQL에서 관리되는 파일은 다음과 같이 3가지 타입이다.데이터파일과 로그파일은 데이터베이스의 의해">
 <meta property="og:locale" content="ko_KR">
+<meta property="article:published_time" content="2021-01-30T03:03:37.000Z">
+<meta property="article:modified_time" content="2021-01-30T06:19:51.761Z">
 <meta property="article:author" content="John Doe">
+<meta property="article:tag" content="stacoverflow-2010">
+<meta property="article:tag" content="azure-data-studio">
 <meta name="twitter:card" content="summary">
     
     
@@ -37,6 +43,8 @@
     
 
     
+        
+    
 </head>
 
     <body>
@@ -46,7 +54,7 @@
 
     
 
-<header id="header" data-behavior="1">
+<header id="header" data-behavior="4">
     <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
     <div class="header-title">
         <a
@@ -73,7 +81,7 @@
             <!-- Define author's picture -->
 
 
-<nav id="sidebar" data-behavior="1">
+<nav id="sidebar" data-behavior="4">
     <div class="sidebar-container">
         
         
@@ -269,105 +277,22 @@
 </nav>
 
             
-            <div id="main" data-behavior="1"
+            <div id="main" data-behavior="4"
                  class="
                         hasCoverMetaIn
                         ">
                 
-    <section class="postShorten-group main-content-wrap">
+<article class="post">
     
     
-    <article class="postShorten postShorten--thumbnailimg-bottom">
-        <div class="postShorten-wrap">
-            
-            <div class="postShorten-header">
-                <h1 class="postShorten-title">
-                    
-                        <a
-                            class="link-unstyled"
-                            href="/2021/01/30/20210130-2/"
-                            aria-label=": 데이터분석가로 성장하기 2부-스텍오버플로우 2013년 데이터 분석"
-                        >
-                            데이터분석가로 성장하기 2부-스텍오버플로우 2013년 데이터 분석
-                        </a>
-                    
-                </h1>
-                <div class="postShorten-meta">
-    <time datetime="2021-01-30T06:16:53+00:00">
-	
-		    2021/01/30
-    	
-    </time>
+        <div class="post-header main-content-wrap text-left">
     
-</div>
-
-            </div>
-            
-                <div class="postShorten-content">
-                    <h1 id="초보개발자-데이터-분석전문가로-성장하기-시즌1"><a href="#초보개발자-데이터-분석전문가로-성장하기-시즌1" class="headerlink" title="초보개발자 데이터 분석전문가로 성장하기 시즌1"></a>초보개발자 데이터 분석전문가로 성장하기 시즌1</h1><p>2화 대용량 오픈데이터 분석 - 2013년 데이터 분석</p>
-<hr>
-<h3 id="분석할-오픈데이터"><a href="#분석할-오픈데이터" class="headerlink" title="분석할 오픈데이터"></a>분석할 오픈데이터</h3><ul>
-<li>데이터 : 스텍오버플로우 2013년 데이터  </li>
-<li>사이즈 : 54.79GB  </li>
-<li>파일리스트<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">StackOverflow2013_log.ldf</span><br><span class="line">StackOverflow2013_4.ndf</span><br><span class="line">StackOverflow2013_3.ndf</span><br><span class="line">StackOverflow2013_2.ndf</span><br><span class="line">StackOverflow2013_1.mdf</span><br></pre></td></tr></table></figure>
-<h3 id="참고"><a href="#참고" class="headerlink" title="참고"></a>참고</h3>세팅과 2010년 데이터 sql server에 업로드 하는 방법<br><a target="_blank" rel="noopener" href="https://kindfamilyb.github.io/2021/01/30/%EB%B6%84%EC%84%9D/">https://kindfamilyb.github.io/2021/01/30/%EB%B6%84%EC%84%9D/</a></li>
-</ul>
-<h3 id="참고사이트"><a href="#참고사이트" class="headerlink" title="참고사이트"></a>참고사이트</h3><ol>
-<li><p> stacexchange<br><a target="_blank" rel="noopener" href="https://data.stackexchange.com/stackoverflow/queries">https://data.stackexchange.com/stackoverflow/queries</a></p>
-</li>
-<li><p>brentozar<br><a target="_blank" rel="noopener" href="https://www.brentozar.com/archive/2015/10/how-to-download-the-stack-overflow-database-via-bittorrent/">https://www.brentozar.com/archive/2015/10/how-to-download-the-stack-overflow-database-via-bittorrent/</a></p>
-</li>
-</ol>
-<h3 id="세팅순서-7step"><a href="#세팅순서-7step" class="headerlink" title="세팅순서 ( 7step )"></a>세팅순서 ( 7step )</h3><h3 id="1-sql-server-도커생성"><a href="#1-sql-server-도커생성" class="headerlink" title="1. sql server 도커생성"></a>1. sql server 도커생성</h3><p><code>docker run -d --name sql_server_stackoverflow2013 -e &#39;ACCEPT_EULA=Y&#39; -e &#39;SB_PASSWORD=reallyStrongPwd123&#39; -p 1433:1433 mcr.microsoft.com/mssql/server:2019-latest</code><br>-d : Run container in background and print container ID<br>–name : Assign a name to the container<br>-e : Set environment variables<br>-p : Publish a container’s port(s) to the host</p>
-<h3 id="2-mssql-접속"><a href="#2-mssql-접속" class="headerlink" title="2. mssql 접속"></a>2. mssql 접속</h3><p><code>npm install -g sql-cli</code><br><code>mssql -u sa -p reallyStrongPwd123</code></p>
-<h3 id="3-docker-root-사용자로-접속-backup-폴더-생성"><a href="#3-docker-root-사용자로-접속-backup-폴더-생성" class="headerlink" title="3. docker root 사용자로 접속 backup 폴더 생성"></a>3. docker root 사용자로 접속 backup 폴더 생성</h3><p><code>docker exec -itu 0 87c1f0ca52a6 &quot;bash&quot;</code><br><code>cd /var/opt/mssql</code><br><code>mkdir backup</code>  </p>
-<h3 id="4-backup-폴더에-파일-cp"><a href="#4-backup-폴더에-파일-cp" class="headerlink" title="4. backup 폴더에 파일 cp"></a>4. backup 폴더에 파일 cp</h3><p><code>docker ps</code><br><code>docker cp &lt;디렉토리&gt; &lt;dockerid&gt;:/var/opt/mssql/backup</code>  </p>
-<h3 id="5-백업-폴더로-이동"><a href="#5-백업-폴더로-이동" class="headerlink" title="5. 백업 폴더로 이동"></a>5. 백업 폴더로 이동</h3><p><code>docker exec -itu 0 87c1f0ca52a6 &quot;bash&quot;</code><br><code>cd /var/opt/mssql/backup</code></p>
-<h3 id="6-파일의-권한설정"><a href="#6-파일의-권한설정" class="headerlink" title="6. 파일의 권한설정"></a>6. 파일의 권한설정</h3><p><code>chmod 777 StackOverflow2010.mdf</code>  </p>
-<h3 id="7-cli-접속-db생성"><a href="#7-cli-접속-db생성" class="headerlink" title="7. cli 접속 db생성"></a>7. cli 접속 db생성</h3><p><code>mssql -u sa -p reallyStrongPwd123</code><br><code>CREATE DATABASE stackoverflow2013 ON (FILENAME = &#39;/var/opt/mssql/backup/StackOverflow2013/StackOverflow2013_1.mdf&#39;), (FILENAME = &#39;/var/opt/mssql/backup/StackOverflow2013/StackOverflow2013_2.ndf&#39;), (FILENAME = &#39;/var/opt/mssql/backup/StackOverflow2013/StackOverflow2013_3.ndf&#39;), (FILENAME = &#39;/var/opt/mssql/backup/StackOverflow2013/StackOverflow2013_4.ndf&#39;), (FILENAME = &#39;/var/opt/mssql/backup/StackOverflow2013/StackOverflow2013_log.ldf&#39;) FOR ATTACH;</code></p>
-<h3 id="스텍오버플로우-쿼리분석"><a href="#스텍오버플로우-쿼리분석" class="headerlink" title="스텍오버플로우 쿼리분석"></a>스텍오버플로우 쿼리분석</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">-- StackOverflow Rank and Percentile</span><br><span class="line"></span><br><span class="line">WITH Rankings AS (</span><br><span class="line">SELECT Id, Ranking &#x3D; ROW_NUMBER() OVER(ORDER BY Reputation DESC)</span><br><span class="line">FROM Users</span><br><span class="line">)</span><br><span class="line">,Counts AS (</span><br><span class="line">SELECT Count &#x3D; COUNT(*)</span><br><span class="line">FROM Users</span><br><span class="line">WHERE Reputation &gt; 100</span><br><span class="line">)</span><br><span class="line">SELECT Id, Ranking, CAST(Ranking AS decimal(20, 5)) &#x2F; (SELECT Count FROM Counts) AS Percentile</span><br><span class="line">FROM Rankings</span><br><span class="line">WHERE Id &#x3D; ##UserId##</span><br></pre></td></tr></table></figure>
-<h4 id="방법1"><a href="#방법1" class="headerlink" title="방법1"></a>방법1</h4><p>stacExchange사이트에서 바로 쿼리실행<br><a target="_blank" rel="noopener" href="https://data.stackexchange.com/stackoverflow/query/6772/stackoverflow-rank-and-percentile">https://data.stackexchange.com/stackoverflow/query/6772/stackoverflow-rank-and-percentile</a></p>
-<h4 id="방법2"><a href="#방법2" class="headerlink" title="방법2"></a>방법2</h4><p>로컬 sql server에서 쿼리 실행  </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ITH Rankings AS (</span><br><span class="line">SELECT Id, Ranking &#x3D; ROW_NUMBER() OVER(ORDER BY Reputation DESC)</span><br><span class="line">FROM Users</span><br><span class="line">)</span><br><span class="line">,Counts AS (</span><br><span class="line">SELECT Count &#x3D; COUNT(*)</span><br><span class="line">FROM Users</span><br><span class="line">WHERE Reputation &gt; 100</span><br><span class="line">)</span><br><span class="line">SELECT Id, Ranking, CAST(Ranking AS decimal(20, 5)) &#x2F; (SELECT Count FROM Counts) AS Percentile</span><br><span class="line">FROM Rankings</span><br><span class="line">--- WHERE ID &#x3D; ##디비에 있는 userid 넣어야함##</span><br></pre></td></tr></table></figure>
-                    
-                        
-
-
-                    
-                    
-                        <p>
-                            <a
-                                href="/2021/01/30/20210130-2/#post-footer"
-                                class="postShorten-excerpt_link link"
-                                aria-label=""
-                            >
-                                댓글 공유
-                            </a>
-                        </p>
-                    
-                </div>
-            
-        </div>
-        
-    </article>
+        <h1 class="post-title">
+            데이터분석가로 성장하기 1부-스텍오버플로우 데이터 분석
+        </h1>
     
     
-    <article class="postShorten postShorten--thumbnailimg-bottom">
-        <div class="postShorten-wrap">
-            
-            <div class="postShorten-header">
-                <h1 class="postShorten-title">
-                    
-                        <a
-                            class="link-unstyled"
-                            href="/2021/01/30/20210130_1/"
-                            aria-label=": 데이터분석가로 성장하기 1부-스텍오버플로우 데이터 분석"
-                        >
-                            데이터분석가로 성장하기 1부-스텍오버플로우 데이터 분석
-                        </a>
-                    
-                </h1>
-                <div class="postShorten-meta">
+        <div class="post-meta">
     <time datetime="2021-01-30T03:03:37+00:00">
 	
 		    2021/01/30
@@ -376,10 +301,13 @@
     
 </div>
 
-            </div>
-            
-                <div class="postShorten-content">
-                    <h1 id="초보개발자-데이터-분석전문가로-성장하기-시즌1"><a href="#초보개발자-데이터-분석전문가로-성장하기-시즌1" class="headerlink" title="초보개발자 데이터 분석전문가로 성장하기 시즌1"></a>초보개발자 데이터 분석전문가로 성장하기 시즌1</h1><p>1화 대용량 오픈데이터 분석 - docker에 sql server 설치 및 2010년 데이터 샘플데이터 분석</p>
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <h1 id="초보개발자-데이터-분석전문가로-성장하기-시즌1"><a href="#초보개발자-데이터-분석전문가로-성장하기-시즌1" class="headerlink" title="초보개발자 데이터 분석전문가로 성장하기 시즌1"></a>초보개발자 데이터 분석전문가로 성장하기 시즌1</h1><p>1화 대용량 오픈데이터 분석 - docker에 sql server 설치 및 2010년 데이터 샘플데이터 분석</p>
 <h3 id="분석할-오픈데이터"><a href="#분석할-오픈데이터" class="headerlink" title="분석할 오픈데이터"></a>분석할 오픈데이터</h3><ul>
 <li>스택오버</li>
 <li>lalavel db구조</li>
@@ -418,37 +346,121 @@
 <h4 id="방법1"><a href="#방법1" class="headerlink" title="방법1"></a>방법1</h4><p>stacExchange사이트에서 바로 쿼리실행<br><a target="_blank" rel="noopener" href="https://data.stackexchange.com/stackoverflow/query/6772/stackoverflow-rank-and-percentile">https://data.stackexchange.com/stackoverflow/query/6772/stackoverflow-rank-and-percentile</a></p>
 <h4 id="방법2"><a href="#방법2" class="headerlink" title="방법2"></a>방법2</h4><p>로컬 sql server에서 쿼리 실행  </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ITH Rankings AS (</span><br><span class="line">SELECT Id, Ranking &#x3D; ROW_NUMBER() OVER(ORDER BY Reputation DESC)</span><br><span class="line">FROM Users</span><br><span class="line">)</span><br><span class="line">,Counts AS (</span><br><span class="line">SELECT Count &#x3D; COUNT(*)</span><br><span class="line">FROM Users</span><br><span class="line">WHERE Reputation &gt; 100</span><br><span class="line">)</span><br><span class="line">SELECT Id, Ranking, CAST(Ranking AS decimal(20, 5)) &#x2F; (SELECT Count FROM Counts) AS Percentile</span><br><span class="line">FROM Rankings</span><br><span class="line">--- WHERE ID &#x3D; ##디비에 있는 userid 넣어야함##</span><br></pre></td></tr></table></figure>
-                    
-                        
-
-
-                    
-                    
-                        <p>
-                            <a
-                                href="/2021/01/30/20210130_1/#post-footer"
-                                class="postShorten-excerpt_link link"
-                                aria-label=""
-                            >
-                                댓글 공유
-                            </a>
-                        </p>
-                    
-                </div>
             
+
+
         </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
         
-    </article>
-    
-    <div class="pagination-bar">
-    <ul class="pagination">
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">태그</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/tags/azure-data-studio/" rel="tag">azure-data-studio</a> <a class="tag tag--primary tag--small t-none-link" href="/tags/stacoverflow-2010/" rel="tag">stacoverflow-2010</a>
+
+            </div>
         
         
-        <li class="pagination-number">page 1 of 1</li>
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2021/01/30/20210130-2/"
+                    data-tooltip="데이터분석가로 성장하기 2부-스텍오버플로우 2013년 데이터 분석"
+                    aria-label="이전: 데이터분석가로 성장하기 2부-스텍오버플로우 2013년 데이터 분석"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">이전</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    <a
+                        class="post-action-btn btn btn--disabled"
+                        aria-hidden="true"
+                    >
+                        
+                        <span class="hide-xs hide-sm text-small icon-mr">다음</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="이 포스트 공유하기"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/2021/01/30/20210130_1/"
+                    title="Facebook에 공유하기"
+                    aria-label="Facebook에 공유하기"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://example.com/2021/01/30/20210130_1/"
+                    title="Twitter에 공유하기"
+                    aria-label="Twitter에 공유하기"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://example.com/2021/01/30/20210130_1/"
+                    title="Google+에 공유하기"
+                    aria-label="Google+에 공유하기"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="맨 위로">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
     </ul>
 </div>
 
-</section>
+
+        
+        
+            
+        
+    </div>
+</article>
 
 
 
@@ -459,6 +471,151 @@
 </footer>
 
             </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2021/01/30/20210130-2/"
+                    data-tooltip="데이터분석가로 성장하기 2부-스텍오버플로우 2013년 데이터 분석"
+                    aria-label="이전: 데이터분석가로 성장하기 2부-스텍오버플로우 2013년 데이터 분석"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">이전</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    <a
+                        class="post-action-btn btn btn--disabled"
+                        aria-hidden="true"
+                    >
+                        
+                        <span class="hide-xs hide-sm text-small icon-mr">다음</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="이 포스트 공유하기"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/2021/01/30/20210130_1/"
+                    title="Facebook에 공유하기"
+                    aria-label="Facebook에 공유하기"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=http://example.com/2021/01/30/20210130_1/"
+                    title="Twitter에 공유하기"
+                    aria-label="Twitter에 공유하기"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=http://example.com/2021/01/30/20210130_1/"
+                    title="Google+에 공유하기"
+                    aria-label="Google+에 공유하기"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="맨 위로">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/2021/01/30/20210130_1/"
+                        aria-label="Facebook에 공유하기"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>Facebook에 공유하기</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=http://example.com/2021/01/30/20210130_1/"
+                        aria-label="Twitter에 공유하기"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>Twitter에 공유하기</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=http://example.com/2021/01/30/20210130_1/"
+                        aria-label="Google+에 공유하기"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>Google+에 공유하기</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
             
         </div>
         
@@ -496,6 +653,8 @@
 
 <!--SCRIPTS END-->
 
+
+    
 
 
 
